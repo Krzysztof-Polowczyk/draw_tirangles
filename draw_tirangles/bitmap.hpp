@@ -11,6 +11,14 @@ int edgeCross(point2D a, point2D b, point2D p) {
     return ab.x * ap.y - ab.y * ap.x;
 }
 
+bool is_top_left(point2D start, point2D end) {
+    point2D edge = { end.x - start.x, end.y - start.y };
+    bool is_top_edge = edge.y == 0 && edge.x > 0;
+    bool is_left_edge = edge.y < 0;
+    return is_left_edge || is_top_edge;
+}
+
+
 struct GameWindowBuffer
 {
     unsigned char* memory = 0;
@@ -54,22 +62,28 @@ struct GameWindowBuffer
         int x_max = fmax(fmax(tri.a.x, tri.b.x), tri.c.x);
         int y_max = fmax(fmax(tri.a.y, tri.b.y), tri.c.y);
 
+        int baias1 = is_top_left(tri.b, tri.c) ? 0 : -1;
+        int baias2 = is_top_left(tri.c, tri.a) ? 0 : -1;
+        int baias3 = is_top_left(tri.a, tri.b) ? 0 : -1;
+
+        float field = edgeCross(tri.a, tri.b, tri.c);
         // Loop all candidate pixels inside the bounding box
         for (int y = y_min; y <= y_max; y++) {
             for (int x = x_min; x <= x_max; x++) {
                 point2D p = { x, y };
-                int cross1 = edgeCross(tri.b, tri.c, p);
-                int cross2 = edgeCross(tri.c, tri.a, p);
-                int cross3 = edgeCross(tri.a, tri.b, p);
+                int cross1 = edgeCross(tri.b, tri.c, p) + baias1;
+                int cross2 = edgeCross(tri.c, tri.a, p) + baias2;
+                int cross3 = edgeCross(tri.a, tri.b, p) + baias3;
 
-                bool is_inside = cross1 <= 0 and cross2 <= 0 and cross3 <= 0;
+                bool is_inside = cross1 >= 0 and cross2 >= 0 and cross3 >= 0;
 
-                // TODO:
                 if (is_inside) {
-                    drawAtSafe(x, y, r, g, b);
+                    drawAtSafe(x, y, 
+                        r * (cross1 / field), 
+                        g * (cross3 / field),
+                        b * (cross2 / field));
                 }
             }
         }
-
     }
 };

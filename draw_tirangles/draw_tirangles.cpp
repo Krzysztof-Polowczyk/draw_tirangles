@@ -8,6 +8,9 @@
 //https://www.youtube.com/watch?v=k5wtuKWmV48
 
 
+
+
+
 void resetWindowBuffer(GameWindowBuffer* gameWindowBuffer, BITMAPINFO* bitmapInfo, HWND wind)
 {
     RECT rect = {};
@@ -115,7 +118,7 @@ HWND createWindow() {
 int main()
 {
 
-    triangle tri[2] = { {{100, 100}, {100, 200}, {200, 150}}, {{300, 300}, {300, 400}, {400, 300}} };
+    
 
     HWND wind = createWindow();
 
@@ -123,6 +126,7 @@ int main()
 
     while (windowStuff.running)
     {
+        triangle tri[2] = { {{200, 100}, {100, 200}, {100, 100}}, { {100, 200}, {200, 100}, {200, 200}} };
         MSG msg = {};
         while (PeekMessage(&msg, wind, 0, 0, PM_REMOVE) > 0)
         {
