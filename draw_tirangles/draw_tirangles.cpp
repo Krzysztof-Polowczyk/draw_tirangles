@@ -3,7 +3,7 @@
 #include <vector>
 #include <Windows.h>
 #include "bitmap.hpp"
-
+#include "renderer.cpp"
 
 //https://www.youtube.com/watch?v=k5wtuKWmV48
 
@@ -116,17 +116,16 @@ HWND createWindow() {
 
 
 int main()
-{
-
-    
-
+{    
     HWND wind = createWindow();
 
     resetWindowBuffer(&gameWindowBuffer, &windowStuff.bitmapInfo, wind);
+    triangle tri1 = { {100, 100}, {200, 100}, {100, 200}, {255,0,0} };
+    KKK reality({tri1});
 
     while (windowStuff.running)
     {
-        triangle tri[2] = { {{200, 100}, {100, 200}, {100, 100}}, { {100, 200}, {200, 100}, {200, 200}} };
+
         MSG msg = {};
         while (PeekMessage(&msg, wind, 0, 0, PM_REMOVE) > 0)
         {
@@ -135,11 +134,13 @@ int main()
         }
 
         gameWindowBuffer.clear();
-        for (triangle t : tri) {
+        for (triangle t : reality.getMesh()) {
             gameWindowBuffer.draw_triangle(t);
 
         }
         InvalidateRect(wind, nullptr, FALSE);
+
+        reality.update();
     }
 
     return 0;

@@ -1,8 +1,5 @@
 #include "geometrickStructures.hpp"
 
-#define min(a, b) ((a) < (b) ? (a) : (b))
-#define max(a, b) ((a) > (b) ? (a) : (b))
-
 
  
 int edgeCross(point2D a, point2D b, point2D p) {
@@ -25,16 +22,16 @@ struct GameWindowBuffer
     int w = 0;
     int h = 0;
 
-    void drawAtSafe(int x, int y, unsigned char r, unsigned char g, unsigned char b)
+    void drawAtSafe(int x, int y, triInt color)
     {
         if (x >= w || y >= h || x < 0 || y < 0)
         {
             return;
         }
 
-        memory[4 * (x + y * w) + 0] = b; // blue
-        memory[4 * (x + y * w) + 1] = g; // green
-        memory[4 * (x + y * w) + 2] = r; // red
+        memory[4 * (x + y * w) + 0] = color.B; // blue
+        memory[4 * (x + y * w) + 1] = color.G; // green
+        memory[4 * (x + y * w) + 2] = color.R; // red
         memory[4 * (x + y * w) + 3] = 0; // reserved for alignment
     }
 
@@ -52,9 +49,6 @@ struct GameWindowBuffer
 
     void draw_triangle(triangle tri)
     {
-        int r = 255;
-        int g = 255;
-        int b = 255;
 
         // Finds the bounding box with all candidate pixels
         int x_min = fmin(fmin(tri.a.x, tri.b.x), tri.c.x);
@@ -67,6 +61,7 @@ struct GameWindowBuffer
         int baias3 = is_top_left(tri.a, tri.b) ? 0 : -1;
 
         float field = edgeCross(tri.a, tri.b, tri.c);
+
         // Loop all candidate pixels inside the bounding box
         for (int y = y_min; y <= y_max; y++) {
             for (int x = x_min; x <= x_max; x++) {
@@ -76,12 +71,12 @@ struct GameWindowBuffer
                 int cross3 = edgeCross(tri.a, tri.b, p) + baias3;
 
                 bool is_inside = cross1 >= 0 and cross2 >= 0 and cross3 >= 0;
+                tri.color.R* (cross1 / field);
+                tri.color.G* (cross3 / field);
+                tri.color.B* (cross2 / field);
 
                 if (is_inside) {
-                    drawAtSafe(x, y, 
-                        r * (cross1 / field), 
-                        g * (cross3 / field),
-                        b * (cross2 / field));
+                    drawAtSafe(x, y, tri.color);
                 }
             }
         }
