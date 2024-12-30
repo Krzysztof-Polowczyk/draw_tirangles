@@ -18,19 +18,16 @@
     <ClCompile Include="draw_tirangles.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="renderer.cpp">
-      <Filter>Pliki nagłówkowe</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="geometrickStructures.hpp">
+    <ClInclude Include="Math.hpp">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
     <ClInclude Include="bitmap.hpp">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="mathFunctions.hpp">
-      <Filter>Pliki nagłówkowe</Filter>
+    <ClInclude Include="mylib.h">
+      <Filter>Pliki zasobów</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
