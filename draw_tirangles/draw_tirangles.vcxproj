@@ -128,12 +128,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="draw_tirangles.cpp" />
-    <ClCompile Include="renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bitmap.hpp" />
-    <ClInclude Include="geometrickStructures.hpp" />
-    <ClInclude Include="mathFunctions.hpp" />
+    <ClInclude Include="Math.hpp" />
+    <ClInclude Include="mylib.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
