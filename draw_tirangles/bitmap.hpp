@@ -18,7 +18,7 @@ public:
     int height;
     unsigned char *picture;
     Texture(int w, int h, unsigned char* picture);
-
+    // 640900 
     Color getColor(int x, int y) {
         if (4 * (x + y * wight) + 2 < 2270436) {
             return { (int)picture[4 * (x + y * wight) + 0], (int)picture[4 * (x + y * wight) + 1], (double)picture[4 * (x + y * wight) + 2] };

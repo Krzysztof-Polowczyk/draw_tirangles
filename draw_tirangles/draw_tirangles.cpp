@@ -363,7 +363,7 @@ mesh create_mesh_mountaines() {
             float fScaleAcc = 0.0f;
             float fScale = 1.0f;
 
-            for (int o = 0; o < 1; o++)
+            for (int o = 0; o < 7; o++)
             {
                 
                 //std::cout << nSampleX1 << ' ' << nSampleX2 << ' ' << nSampleY1 << ' ' << nSampleX1 << ' ' << nSampleY2 << std::endl;
@@ -583,10 +583,9 @@ int main()
 
         mat matViev = Vecmath::Matrix_QuickInverse(matCamera);
 
-
         lightDir = Vecmath::multiplyMat(lightDir, matRotZ_sun);
 
-        //
+        
         //Vec1x3 vForward = Vecmath::mulVecbyNum(LookDir, 0.2);
         //cmaPos = Vecmath::addVec(cmaPos, vForward);
        
@@ -671,6 +670,8 @@ int main()
         std::sort(tirstris_for_rasteryztion.begin(), tirstris_for_rasteryztion.end(), [](const triangle& a, const triangle& b) -> bool {
             return (a.a.z + a.b.z + a.c.z) / 3 > (b.a.z + b.b.z + b.c.z) / 3;
             });
+        // thiis 3 lines slow down program expenencionaly O(n^2) where n is number of polygons 
+        // stupid painters algirithm no wonder that he got rejected from art school
 
             // Draw the transformed, viewed, clipped, projected, sorted, clipped triangles
    
@@ -724,12 +725,12 @@ int main()
                     gameWindowBuffer.triangle_fill(tri.a, tri.c, tri.b, tri.color, tri.text0, tri.text2, tri.text1, pic);
  
                     //gameWindowBuffer.triangle_fill(tri.a, tri.b, tri.c,tri.color, tri.text0, tri.text2, tri.text1, pic);
-                    gameWindowBuffer.draw_triangle_outline(tri);
+                    //gameWindowBuffer.draw_triangle_outline(tri);
                     //tri.color = { 0,255,255 };
                     //std::cout << "################################33" << std::endl;
 
                     //std::cout << "################################33" << std::endl;
-                }// fix this idiot
+                }
             }
         InvalidateRect(wind, nullptr, FALSE);
         count += 1;

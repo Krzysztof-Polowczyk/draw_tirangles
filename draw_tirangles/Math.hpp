@@ -12,7 +12,6 @@ class Vecmath {
 		static Vec1x3 addVec(Vec1x3& A, Vec1x3& B) {
 			return { A.x + B.x, A.y + B.y, A.z + B.z };
 		}
- 
 
 		static Vec1x3 mulVecbyNum(Vec1x3& iVec, double num) {
 			return { iVec.x * num, iVec.y * num, iVec.z * num };
@@ -131,7 +130,6 @@ class Vecmath {
 			return addVec(lineStart, lineToIntersect);
 		}
 
-
 		// to fix
 		// corectly align triangles
 		// optimizaton
@@ -200,7 +198,6 @@ class Vecmath {
 				}
 				
 				//std::cout << "hej" << std::endl;
-				// Ensure right-handed winding order
 
 				out_tri1 = in_tri;
 
@@ -230,7 +227,6 @@ class Vecmath {
 				out_tri1.text2.x = t * (outside_tex[1]->x - inside_tex[0]->x) + inside_tex[0]->x;
 				out_tri1.text2.y = t * (outside_tex[1]->y - inside_tex[0]->y) + inside_tex[0]->y;
 
-				// Ensure right-handed winding order
 				Vec1x3 B = subVecbyVec(out_tri1.b, out_tri1.a);
 				Vec1x3 C = subVecbyVec(out_tri1.c, out_tri1.a);
 
