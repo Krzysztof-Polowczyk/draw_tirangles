@@ -24,6 +24,7 @@ double Xpitch = 0;
 Vec1x3 cmaPos = { 32,0, 32 };
 double sun_angle = 0.00;
 
+float fTheta = 0;
 
 float fTheta = 0;
 
@@ -172,6 +173,46 @@ LRESULT windProc(HWND wind, UINT msg, WPARAM wp, LPARAM lp)
         {
             sun_angle += 0.01;
         }
+    } break;
+
+    case WM_KEYDOWN: 
+    {
+        if (wp == VK_UP)
+        {
+            cmaPos.y += 0.3;
+        }
+        if (wp == VK_DOWN)
+        {
+            cmaPos.y -= 0.3;
+        }
+        if (wp == VK_LEFT)
+            {
+                cmaPos.x += 0.3;
+            }
+        if (wp == VK_RIGHT)
+                {
+                    cmaPos.x -= 0.3;
+                }
+
+        Vec1x3 vForward = Vecmath::mulVecbyNum(LookDir, 0.1);
+
+        if (wp == 'W')
+                {
+                    cmaPos = Vecmath::addVec(cmaPos, vForward);
+                }
+        if (wp == 'S')
+                {
+                    cmaPos = Vecmath::subVecbyVec(cmaPos, vForward);
+                }
+
+        if (wp == 'A')
+                {
+                    Yyawl -= 0.2;
+                }
+        if (wp == 'D')
+                {
+                    Yyawl += 0.2;
+                }
     } break;
 
     default:
@@ -400,6 +441,7 @@ mesh create_mesh_mountaines() {
         sound.push_back(row);
     }
 
+    std::ifstream f(path); // why "//"?
 
     for (int y = 0; y < h; y++) {
         std::vector<Vec1x3> row;
@@ -493,6 +535,28 @@ int main()
     //mesh cube = read_mesh_from_file("C:\\Users\\KrzysztofPolowczyk\\Desktop\\cube.txt");
     mesh cube = create_mesh_mountaines();
     HWND wind = createWindow();
+    resetWindowBuffer(&gameWindowBuffer, &windowStuff.bitmapInfo, wind);
+
+    // main game loop
+    std::thread t1(ThreadFunction);
+    t1.detach();
+
+
+    double fNear = 0.1;
+    double fFar = 1000.0;
+    double FOV = 90.0;
+    int width = 0;
+    int height = 0;
+    RECT rect;
+    double FOVRad = 1.0 / tanf(FOV * 0.5 / 180 * 3.14159);
+    while (windowStuff.running){
+        //fTheta += 0.01;
+
+        if (GetWindowRect(wind, &rect))
+        {
+            width = rect.right - rect.left;
+            height = rect.bottom - rect.top;
+        }
 
 
     // full screan - optional

@@ -12,6 +12,7 @@ class Vecmath {
 		static Vec1x3 addVec(Vec1x3& A, Vec1x3& B) {
 			return { A.x + B.x, A.y + B.y, A.z + B.z };
 		}
+ 
 
 		static Vec1x3 mulVecbyNum(Vec1x3& iVec, double num) {
 			return { iVec.x * num, iVec.y * num, iVec.z * num };
@@ -148,6 +149,7 @@ class Vecmath {
 				};
 
 			// Create two temporary storage arrays to classify points either side of plane
+			// If distance sign is positive, point lies on "inside" of plane
 			Vec1x3* inside_points[3];  int nInsidePointCount = 0;
 			Vec1x3* outside_points[3]; int nOutsidePointCount = 0;
 			Vec1x3* inside_tex[3]; int nInsideTexCount = 0;
@@ -206,15 +208,20 @@ class Vecmath {
 				if (B.x * C.y - B.y * C.x > 0) {
 					std::swap(out_tri1.b, out_tri1.c);
 					std::swap(out_tri1.text1, out_tri1.text2);
-				}
+			}
 
 				return 1;
 			}
 
 			if (nInsidePointCount == 1 && nOutsidePointCount == 2)
 			{
+				// Triangle should be clipped. As two points lie outside
+				// the plane, the triangle simply becomes a smaller triangle
 
+				// Copy appearance info to new triangle
+				out_tri1.color = in_tri.color;
 
+				// The inside point is valid, so keep that...
 				out_tri1.a = *inside_points[0];
 				out_tri1.text0 = *inside_tex[0];
 
@@ -241,10 +248,18 @@ class Vecmath {
 
 			if (nInsidePointCount == 2 && nOutsidePointCount == 1)
 			{
+				// Triangle should be clipped. As two points lie inside the plane,
+				// the clipped triangle becomes a "quad". Fortunately, we can
+				// represent a quad with two new triangles
+
+				// Copy appearance info to new triangles
 				out_tri1.color = in_tri.color;
-				
+
 				//out_tri1.text0 = {20000000,204444444, 0}; out_tri1.text1 = {20000000,204444444, 0}; out_tri1.text2 = {20000000,204444444, 0};
 
+				// The first triangle consists of the two inside points and a new
+				// point determined by the location where one side of the triangle
+				// intersects with the plane
 				out_tri1.a = *inside_points[0];
 				out_tri1.b = *inside_points[1];
 				out_tri1.text0 = *inside_tex[0];
