@@ -26,7 +26,7 @@ double sun_angle = 0.00;
 
 float fTheta = 0;
 
-float fTheta = 0;
+//float fTheta = 0;
 
 extern "C" {
     #define STB_IMAGE_IMPLEMENTATION
@@ -173,46 +173,6 @@ LRESULT windProc(HWND wind, UINT msg, WPARAM wp, LPARAM lp)
         {
             sun_angle += 0.01;
         }
-    } break;
-
-    case WM_KEYDOWN: 
-    {
-        if (wp == VK_UP)
-        {
-            cmaPos.y += 0.3;
-        }
-        if (wp == VK_DOWN)
-        {
-            cmaPos.y -= 0.3;
-        }
-        if (wp == VK_LEFT)
-            {
-                cmaPos.x += 0.3;
-            }
-        if (wp == VK_RIGHT)
-                {
-                    cmaPos.x -= 0.3;
-                }
-
-        Vec1x3 vForward = Vecmath::mulVecbyNum(LookDir, 0.1);
-
-        if (wp == 'W')
-                {
-                    cmaPos = Vecmath::addVec(cmaPos, vForward);
-                }
-        if (wp == 'S')
-                {
-                    cmaPos = Vecmath::subVecbyVec(cmaPos, vForward);
-                }
-
-        if (wp == 'A')
-                {
-                    Yyawl -= 0.2;
-                }
-        if (wp == 'D')
-                {
-                    Yyawl += 0.2;
-                }
     } break;
 
     default:
@@ -441,7 +401,7 @@ mesh create_mesh_mountaines() {
         sound.push_back(row);
     }
 
-    std::ifstream f(path); // why "//"?
+    //std::ifstream f(path); // why "//"?
 
     for (int y = 0; y < h; y++) {
         std::vector<Vec1x3> row;
@@ -547,43 +507,10 @@ int main()
     double FOV = 90.0;
     int width = 0;
     int height = 0;
-    RECT rect;
-    double FOVRad = 1.0 / tanf(FOV * 0.5 / 180 * 3.14159);
-    while (windowStuff.running){
-        //fTheta += 0.01;
-
-        if (GetWindowRect(wind, &rect))
-        {
-            width = rect.right - rect.left;
-            height = rect.bottom - rect.top;
-        }
-
-
-    // full screan - optional
-    SystemParametersInfo(SPI_GETWORKAREA, 0, &rect, 0);
-    SetWindowLong(wind, GWL_STYLE, WS_POPUP | WS_VISIBLE | WS_MINIMIZEBOX);
-    SetWindowPos(wind, NULL, 0, 0, rect.right - rect.left, rect.bottom - rect.top, SWP_NOZORDER);
-
-    resetWindowBuffer(&gameWindowBuffer, &windowStuff.bitmapInfo, wind);
-
-    // main game loop
-    std::thread t1(ThreadFunction);
-    t1.detach();
-
-
-    double fNear = 0.1;
-    double fFar = 1000.0;
-    double FOV = 90.0;
-    int width = 0;
-    int height = 0;
     //RECT rect;
     double FOVRad = 1.0 / tanf(FOV * 0.5 / 180 * 3.14159);
-    Vec1x3 temp = { 0,1,0 };//delete
-    Vec1x3 lightDir = Vecmath::getUnit(temp);
-    while (windowStuff.running){
+    while (windowStuff.running) {
         //fTheta += 0.01;
-        //sun_angle += 0.01;
-        //std::cout << "ehj##################################" << std::endl;
 
         if (GetWindowRect(wind, &rect))
         {
@@ -591,155 +518,188 @@ int main()
             height = rect.bottom - rect.top;
         }
 
-        double aspectRatio = (double)height / (double)width;
-        mat projection_matrix = {
-            {aspectRatio * FOVRad, 0, 0, 0},
-            {0,FOVRad,       0,            0},
-            {0,  0, fFar / (fFar - fNear), 1},
-            {0,0, (-fFar * fNear) / (fFar - fNear),0}
-        };
 
-        mat matRotZ = {
-            {cosf(fTheta), sinf(fTheta), 0 ,0},
-            {-sinf(fTheta), cosf(fTheta), 0 , 0},
-            {0,0,1,0},
-            {0,0,0,1}
-        };
-        mat matRotZ_sun = {
-            {cosf(sun_angle), sinf(sun_angle), 0 ,0},
-            {-sinf(sun_angle), cosf(sun_angle), 0 , 0},
-            {0,0,1,0},
-            {0,0,0,1}
-        };
-        
-        mat matRotX = {
-           {1,0 , 0 ,0},
-           {0,cosf(fTheta * 0.5f), sinf(fTheta * 0.5f) , 0},
-           {0,-sinf(fTheta * 0.5f),cosf(fTheta * 0.5f),0},
-           {0,0,0,1}
-        };
+        // full screan - optional
+        SystemParametersInfo(SPI_GETWORKAREA, 0, &rect, 0);
+        SetWindowLong(wind, GWL_STYLE, WS_POPUP | WS_VISIBLE | WS_MINIMIZEBOX);
+        SetWindowPos(wind, NULL, 0, 0, rect.right - rect.left, rect.bottom - rect.top, SWP_NOZORDER);
 
-        // use this for handling user input
-        handle_entires(wind);
+        resetWindowBuffer(&gameWindowBuffer, &windowStuff.bitmapInfo, wind);
 
-        Vec1x3 vUp = { 0,1,0 };
-        Vec1x3 vTarget = {0,0,1};
-        mat Yrot = {
-            {cosf(Yyawl * 0.5),0,sinf(Yyawl * 0.5),0},
-            {0,1,0,0},
-            {-sinf(Yyawl * 0.5),0,cosf(Yyawl * 0.5),0},
-            {0,0,0,1}
-        };
-        mat XrotCam = {
-            {1, 0, 0, 0},
-            {0, cosf(Xpitch * 0.5), -sinf(Xpitch * 0.5), 0},
-            {0, sinf(Xpitch * 0.5), cosf(Xpitch * 0.5), 0},
-            {0, 0, 0, 1}
-        };
+        // main game loop
+        std::thread t1(ThreadFunction);
+        t1.detach();
 
 
-        LookDir = Vecmath::multiplyMat(vTarget, XrotCam);
-        LookDir = Vecmath::multiplyMat(LookDir, Yrot);
-        vTarget = Vecmath::addVec(cmaPos, LookDir);
+        double fNear = 0.1;
+        double fFar = 1000.0;
+        double FOV = 90.0;
+        int width = 0;
+        int height = 0;
+        //RECT rect;
+        double FOVRad = 1.0 / tanf(FOV * 0.5 / 180 * 3.14159);
+        Vec1x3 temp = { 0,1,0 };//delete
+        Vec1x3 lightDir = Vecmath::getUnit(temp);
+        while (windowStuff.running) {
+            //fTheta += 0.01;
+            //sun_angle += 0.01;
+            //std::cout << "ehj##################################" << std::endl;
 
-
-        mat matCamera = Vecmath::Matrix_PointAt(cmaPos, vTarget, vUp);
-
-        mat matViev = Vecmath::Matrix_QuickInverse(matCamera);
-
-        lightDir = Vecmath::multiplyMat(lightDir, matRotZ_sun);
-
-        
-        //Vec1x3 vForward = Vecmath::mulVecbyNum(LookDir, 0.2);
-        //cmaPos = Vecmath::addVec(cmaPos, vForward);
-       
-
-        std::vector<triangle> tirstris_for_rasteryztion = {};
-        for (triangle &tri : cube) {
-            triangle triProjected, triTrans, tirRotZ, triRotZX, triVievw;
-
-            tirRotZ.a = Vecmath::multiplyMat(tri.a, matRotZ);
-            tirRotZ.b = Vecmath::multiplyMat(tri.b, matRotZ);
-            tirRotZ.c = Vecmath::multiplyMat(tri.c, matRotZ);
-
-            triRotZX.a = Vecmath::multiplyMat(tirRotZ.a, matRotX);
-            triRotZX.b = Vecmath::multiplyMat(tirRotZ.b, matRotX);
-            triRotZX.c = Vecmath::multiplyMat(tirRotZ.c, matRotX);
-
-            triTrans = triRotZX;
-
-            Vec1x3 line1 = Vecmath::subVecbyVec(triTrans.b, triTrans.a);
-            Vec1x3 line2 = Vecmath::subVecbyVec(triTrans.c, triTrans.a);
-            Vec1x3 corss = Vecmath::mulVecbyVec(line1, line2);
-            Vec1x3 normalCross = Vecmath::getUnit(corss);
-            Vec1x3 me = Vecmath::subVecbyVec(triTrans.a, cmaPos);
-            if (Vecmath::dot(normalCross, me) < 0) {
-
-                double lightDot = Vecmath::dot(normalCross, lightDir);
-
-                if (lightDot <= 0.15) {
-                    lightDot = 0.15;
-                }
-                triVievw.a = Vecmath::multiplyMat(triTrans.a, matViev);
-                triVievw.b = Vecmath::multiplyMat(triTrans.b, matViev);
-                triVievw.c = Vecmath::multiplyMat(triTrans.c, matViev);
-                triVievw.text0 = tri.text0;
-                triVievw.text1 = tri.text1;
-                triVievw.text2 = tri.text2;
-                triVievw.color = {0,0,lightDot};
-
-
-                int nClipped = 0;
-                triangle clipped[2];
-                nClipped = Vecmath::Triangle_ClipAgainstPlane({ 0,0,1.1 }, { 0,0,1 }, triVievw, clipped[0], clipped[1]);
-                //std::cout << clipped[0].color.R << clipped[0].color.G << clipped[0].color.B << std::endl;
-
-                
-
-                for (int n = 0; n < nClipped; n++) {
-                    
-                    triProjected.a = Vecmath::multiplyMat(clipped[n].a, projection_matrix);
-                    triProjected.b = Vecmath::multiplyMat(clipped[n].b, projection_matrix);
-                    triProjected.c = Vecmath::multiplyMat(clipped[n].c, projection_matrix);
-
-                    triProjected.a.x *= -1.0; triProjected.a. y *= -1.0;
-                    triProjected.b.x *= -1.0; triProjected.b.y *= -1.0;
-                    triProjected.c.x *= -1.0; triProjected.c.y *= -1.0;
-
-                    triProjected.a.x += 1.0; triProjected.a.y += 1.0;
-                    triProjected.b.x += 1.0; triProjected.b.y += 1.0;
-                    triProjected.c.x += 1.0; triProjected.c.y += 1.0;
-
-                    triProjected.a.x *= 0.5f * width;
-                    triProjected.a.y *= 0.5f * height;
-                    triProjected.b.x *= 0.5f * width;
-                    triProjected.b.y *= 0.5f * height;
-                    triProjected.c.x *= 0.5f * width;
-                    triProjected.c.y *= 0.5f * height;
-                    //triProjected.color = { int(255 * 1),int(255 * 1), int(255*1)};
-
-                    triProjected.text0 = clipped[n].text0;
-                    triProjected.text1 = clipped[n].text1;
-                    triProjected.text2 = clipped[n].text2;
-                    triProjected.color = clipped[n].color;
-                 
-
-                    //std::cout << clipped[0].color.B << " : " << clipped[1].color.B << std::endl;
-
-                    tirstris_for_rasteryztion.push_back(triProjected);
-                }   
+            if (GetWindowRect(wind, &rect))
+            {
+                width = rect.right - rect.left;
+                height = rect.bottom - rect.top;
             }
-        }
 
-        std::sort(tirstris_for_rasteryztion.begin(), tirstris_for_rasteryztion.end(), [](const triangle& a, const triangle& b) -> bool {
-            return (a.a.z + a.b.z + a.c.z) / 3 > (b.a.z + b.b.z + b.c.z) / 3;
-            });
-        // thiis 3 lines slow down program expenencionaly O(n^2) where n is number of polygons 
-        // stupid painters algirithm no wonder that he got rejected from art school
+            double aspectRatio = (double)height / (double)width;
+            mat projection_matrix = {
+                {aspectRatio * FOVRad, 0, 0, 0},
+                {0,FOVRad,       0,            0},
+                {0,  0, fFar / (fFar - fNear), 1},
+                {0,0, (-fFar * fNear) / (fFar - fNear),0}
+            };
 
-            // Draw the transformed, viewed, clipped, projected, sorted, clipped triangles
-   
-        for (auto& triToRaster : tirstris_for_rasteryztion)
+            mat matRotZ = {
+                {cosf(fTheta), sinf(fTheta), 0 ,0},
+                {-sinf(fTheta), cosf(fTheta), 0 , 0},
+                {0,0,1,0},
+                {0,0,0,1}
+            };
+            mat matRotZ_sun = {
+                {cosf(sun_angle), sinf(sun_angle), 0 ,0},
+                {-sinf(sun_angle), cosf(sun_angle), 0 , 0},
+                {0,0,1,0},
+                {0,0,0,1}
+            };
+
+            mat matRotX = {
+               {1,0 , 0 ,0},
+               {0,cosf(fTheta * 0.5f), sinf(fTheta * 0.5f) , 0},
+               {0,-sinf(fTheta * 0.5f),cosf(fTheta * 0.5f),0},
+               {0,0,0,1}
+            };
+
+            // use this for handling user input
+            handle_entires(wind);
+
+            Vec1x3 vUp = { 0,1,0 };
+            Vec1x3 vTarget = { 0,0,1 };
+            mat Yrot = {
+                {cosf(Yyawl * 0.5),0,sinf(Yyawl * 0.5),0},
+                {0,1,0,0},
+                {-sinf(Yyawl * 0.5),0,cosf(Yyawl * 0.5),0},
+                {0,0,0,1}
+            };
+            mat XrotCam = {
+                {1, 0, 0, 0},
+                {0, cosf(Xpitch * 0.5), -sinf(Xpitch * 0.5), 0},
+                {0, sinf(Xpitch * 0.5), cosf(Xpitch * 0.5), 0},
+                {0, 0, 0, 1}
+            };
+
+
+            LookDir = Vecmath::multiplyMat(vTarget, XrotCam);
+            LookDir = Vecmath::multiplyMat(LookDir, Yrot);
+            vTarget = Vecmath::addVec(cmaPos, LookDir);
+
+
+            mat matCamera = Vecmath::Matrix_PointAt(cmaPos, vTarget, vUp);
+
+            mat matViev = Vecmath::Matrix_QuickInverse(matCamera);
+
+            lightDir = Vecmath::multiplyMat(lightDir, matRotZ_sun);
+
+
+            //Vec1x3 vForward = Vecmath::mulVecbyNum(LookDir, 0.2);
+            //cmaPos = Vecmath::addVec(cmaPos, vForward);
+
+
+            std::vector<triangle> tirstris_for_rasteryztion = {};
+            for (triangle& tri : cube) {
+                triangle triProjected, triTrans, tirRotZ, triRotZX, triVievw;
+
+                tirRotZ.a = Vecmath::multiplyMat(tri.a, matRotZ);
+                tirRotZ.b = Vecmath::multiplyMat(tri.b, matRotZ);
+                tirRotZ.c = Vecmath::multiplyMat(tri.c, matRotZ);
+
+                triRotZX.a = Vecmath::multiplyMat(tirRotZ.a, matRotX);
+                triRotZX.b = Vecmath::multiplyMat(tirRotZ.b, matRotX);
+                triRotZX.c = Vecmath::multiplyMat(tirRotZ.c, matRotX);
+
+                triTrans = triRotZX;
+
+                Vec1x3 line1 = Vecmath::subVecbyVec(triTrans.b, triTrans.a);
+                Vec1x3 line2 = Vecmath::subVecbyVec(triTrans.c, triTrans.a);
+                Vec1x3 corss = Vecmath::mulVecbyVec(line1, line2);
+                Vec1x3 normalCross = Vecmath::getUnit(corss);
+                Vec1x3 me = Vecmath::subVecbyVec(triTrans.a, cmaPos);
+                if (Vecmath::dot(normalCross, me) < 0) {
+
+                    double lightDot = Vecmath::dot(normalCross, lightDir);
+
+                    if (lightDot <= 0.15) {
+                        lightDot = 0.15;
+                    }
+                    triVievw.a = Vecmath::multiplyMat(triTrans.a, matViev);
+                    triVievw.b = Vecmath::multiplyMat(triTrans.b, matViev);
+                    triVievw.c = Vecmath::multiplyMat(triTrans.c, matViev);
+                    triVievw.text0 = tri.text0;
+                    triVievw.text1 = tri.text1;
+                    triVievw.text2 = tri.text2;
+                    triVievw.color = { 0,0,lightDot };
+
+
+                    int nClipped = 0;
+                    triangle clipped[2];
+                    nClipped = Vecmath::Triangle_ClipAgainstPlane({ 0,0,1.1 }, { 0,0,1 }, triVievw, clipped[0], clipped[1]);
+                    //std::cout << clipped[0].color.R << clipped[0].color.G << clipped[0].color.B << std::endl;
+
+
+
+                    for (int n = 0; n < nClipped; n++) {
+
+                        triProjected.a = Vecmath::multiplyMat(clipped[n].a, projection_matrix);
+                        triProjected.b = Vecmath::multiplyMat(clipped[n].b, projection_matrix);
+                        triProjected.c = Vecmath::multiplyMat(clipped[n].c, projection_matrix);
+
+                        triProjected.a.x *= -1.0; triProjected.a.y *= -1.0;
+                        triProjected.b.x *= -1.0; triProjected.b.y *= -1.0;
+                        triProjected.c.x *= -1.0; triProjected.c.y *= -1.0;
+
+                        triProjected.a.x += 1.0; triProjected.a.y += 1.0;
+                        triProjected.b.x += 1.0; triProjected.b.y += 1.0;
+                        triProjected.c.x += 1.0; triProjected.c.y += 1.0;
+
+                        triProjected.a.x *= 0.5f * width;
+                        triProjected.a.y *= 0.5f * height;
+                        triProjected.b.x *= 0.5f * width;
+                        triProjected.b.y *= 0.5f * height;
+                        triProjected.c.x *= 0.5f * width;
+                        triProjected.c.y *= 0.5f * height;
+                        //triProjected.color = { int(255 * 1),int(255 * 1), int(255*1)};
+
+                        triProjected.text0 = clipped[n].text0;
+                        triProjected.text1 = clipped[n].text1;
+                        triProjected.text2 = clipped[n].text2;
+                        triProjected.color = clipped[n].color;
+
+
+                        //std::cout << clipped[0].color.B << " : " << clipped[1].color.B << std::endl;
+
+                        tirstris_for_rasteryztion.push_back(triProjected);
+                    }
+                }
+            }
+
+            std::sort(tirstris_for_rasteryztion.begin(), tirstris_for_rasteryztion.end(), [](const triangle& a, const triangle& b) -> bool {
+                return (a.a.z + a.b.z + a.c.z) / 3 > (b.a.z + b.b.z + b.c.z) / 3;
+                });
+            // thiis 3 lines slow down program expenencionaly O(n^2) where n is number of polygons 
+            // stupid painters algirithm no wonder that he got rejected from art school
+
+                // Draw the transformed, viewed, clipped, projected, sorted, clipped triangles
+
+            for (auto& triToRaster : tirstris_for_rasteryztion)
             {
                 // Clip triangles against all four screen edges, this could yield
                 // a bunch of triangles, so create a queue that we traverse to 
@@ -787,7 +747,7 @@ int main()
                 for (auto& tri : listTriangles)
                 {
                     gameWindowBuffer.triangle_fill(tri.a, tri.c, tri.b, tri.color, tri.text0, tri.text2, tri.text1, pic);
- 
+
                     //gameWindowBuffer.triangle_fill(tri.a, tri.b, tri.c,tri.color, tri.text0, tri.text2, tri.text1, pic);
                     //gameWindowBuffer.draw_triangle_outline(tri);
                     //tri.color = { 0,255,255 };
@@ -796,7 +756,8 @@ int main()
                     //std::cout << "################################33" << std::endl;
                 }
             }
-        InvalidateRect(wind, nullptr, FALSE);
-        count += 1;
+            InvalidateRect(wind, nullptr, FALSE);
+            count += 1;
+        }
     }
 }
