@@ -2,7 +2,7 @@
 #include <vector>
 #include <algorithm>
 typedef struct { double x; double y; double z; } Vec1x3;
-typedef struct { int R; int G; int B; } Color;
+typedef struct { int R; int G; double B; } Color;
 typedef struct { Vec1x3 a; Vec1x3 b; Vec1x3 c; Color color; Vec1x3 text0; Vec1x3 text1; Vec1x3 text2;} triangle;
 typedef struct std::vector<std::vector<double>> mat;
 typedef std::vector<triangle> mesh;
@@ -189,7 +189,7 @@ class Vecmath {
 				// All points lie inside the plane
 				
 				if (in_tri.color.B == 0 && in_tri.color.G == 0 && in_tri.color.R == 0) {
-					out_tri1.color = { 255,255,255 };
+					out_tri1.color = in_tri.color;
 					//std::cout << "hej" << std::endl;
 				}
 				else {
@@ -207,8 +207,8 @@ class Vecmath {
 				Vec1x3 B = subVecbyVec(out_tri1.b, out_tri1.a);
 				Vec1x3 C = subVecbyVec(out_tri1.c, out_tri1.a);
 				if (B.x * C.y - B.y * C.x > 0) {
-					//std::swap(out_tri1.b, out_tri1.c);
-					//std::swap(out_tri1.text1, out_tri1.text2);
+					std::swap(out_tri1.b, out_tri1.c);
+					std::swap(out_tri1.text1, out_tri1.text2);
 				}
 
 				return 1;
@@ -238,14 +238,14 @@ class Vecmath {
 					std::swap(out_tri1.b, out_tri1.c);
 					std::swap(out_tri1.text1, out_tri1.text2);
 				}
-				out_tri1.color = { 255,0,0 };
+				out_tri1.color = in_tri.color;
 
 				return 1;
 			}
 
 			if (nInsidePointCount == 2 && nOutsidePointCount == 1)
 			{
-				out_tri1.color = { 0,255,0 };
+				out_tri1.color = in_tri.color;
 				
 				//out_tri1.text0 = {20000000,204444444, 0}; out_tri1.text1 = {20000000,204444444, 0}; out_tri1.text2 = {20000000,204444444, 0};
 
@@ -270,7 +270,7 @@ class Vecmath {
 					std::swap(out_tri1.text1, out_tri1.text2);
 				}
 
-				out_tri2.color = { 0,0,255 };
+				out_tri2.color = in_tri.color;
 				//out_tri2.text0 = { 20000000,204444444, 0 }; out_tri2.text1 = { 20000000,204444444, 0 }; out_tri2.text2 = { 20000000,204444444, 0 };
 				out_tri2.a = *inside_points[1];
 				out_tri2.text0 = *inside_tex[1];

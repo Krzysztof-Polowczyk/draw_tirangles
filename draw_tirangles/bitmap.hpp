@@ -20,9 +20,8 @@ public:
     Texture(int w, int h, unsigned char* picture);
 
     Color getColor(int x, int y) {
-
-        if (4 * (x + y * wight) + 2 < 732736 && 4 * (x + y * wight) >= 0) {
-            return { (int)picture[4 * (x + y * wight) + 0], (int)picture[4 * (x + y * wight) + 1], (int)picture[4 * (x + y * wight) + 2] };
+        if (4 * (x + y * wight) + 2 < 2270436) {
+            return { (int)picture[4 * (x + y * wight) + 0], (int)picture[4 * (x + y * wight) + 1], (double)picture[4 * (x + y * wight) + 2] };
         }
         else {
             return { 160,32,204 };
@@ -119,10 +118,15 @@ struct GameWindowBuffer
         int delta_w2_row = v1.x - v0.x;
 
         // Rasterization fill convention (top-left rule)
-        int bias0 = is_top_left(&v1, &v2) ? 0 : -1;
-        int bias1 = is_top_left(&v2, &v0) ? 0 : -1;
-        int bias2 = is_top_left(&v0, &v1) ? 0 : -1;
+        //int bias0 = is_top_left(&v1, &v2) ? 0 : -1;
+        //int bias1 = is_top_left(&v2, &v0) ? 0 : -1;
+        //int bias2 = is_top_left(&v0, &v1) ? 0 : -1;
 
+        int bias0 = 0;
+        int bias1 = 0;
+        int bias2 = 0;
+        // fix this idiot
+                    
         // Compute the edge functions for the fist (top-left) point
         Vec1x3 p0 = {
           (double)(x_min + 0.5f),
@@ -137,6 +141,7 @@ struct GameWindowBuffer
         int w2;
         bool is_inside;
         Color pixsal_color = { 255,255,255 };
+        Color col = { 255,255,255 };
         double alpha;
         double beta;
         double gamma;
@@ -163,6 +168,9 @@ struct GameWindowBuffer
                     ytext = (alpha)*text0.y + (beta)*text1.y +(gamma)*text2.y;
  
                    pixsal_color = pic.getColor(xtext, ytext);
+                   pixsal_color.R *= color.B;
+                   pixsal_color.G *= color.B;
+                   pixsal_color.B *= color.B;
                         //std::cout << pixsal_color.R << std::endl;
                         // Combine A, R, G, and B into one final 32-bit color
                         //std::cout << pic.height << " " << pic.wight << std::endl;
